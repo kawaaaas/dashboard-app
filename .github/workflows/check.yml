@@ -32,7 +32,10 @@ jobs:
         run: npx tsc --noEmit
         working-directory: infra
       - name: ルールで検査（違反なら失敗）
-        run: npx cdk synth '**' --quiet   # Stage の中のスタックも含めて全部を検査する
+        id: synth
+        run: |
+          set -o pipefail
+          npx cdk synth '**' --quiet 2>&1 | tee synth.log   # Stage の中のスタックも含めて全部を検査する
         working-directory: infra
       - name: 検査結果をPRのサマリーに書く
         if: always()
@@ -49,3 +52,17 @@ jobs:
             gh pr edit ${{ github.event.number }} --add-label "例外あり"
             gh pr comment ${{ github.event.number }} --body-file exceptions.md
           fi
+      - name: 違反があれば、理由をコメントする
+        if: failure() && steps.synth.outcome == 'failure'
+        working-directory: infra
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### チェックシートの違反'
+            echo
+            echo 'ルールに違反しているため、マージできません。設定を直すか、理由を書いて `infra/exceptions.ts` に例外を申請してください（インフラのレビューが必要です）。'
+            echo
+            grep -E '^ERROR Checksheet-' synth.log | sed -E 's/^ERROR Checksheet-[^:]*: /- /; s/ \(Construct Annotations\)$//' | sort -u
+          } > violations.md
+          gh pr comment ${{ github.event.number }} --body-file violations.md --edit-last --create-if-none
