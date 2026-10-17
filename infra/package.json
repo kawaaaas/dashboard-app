@@ -10,7 +10,7 @@
     "checksheet": "acme-checksheet"
   },
   "dependencies": {
-    "@acme/platform": "1.0.0",
+    "@acme/platform": "1.1.0",
     "aws-cdk-lib": "2.273.0",
     "constructs": "10.8.1"
   },
