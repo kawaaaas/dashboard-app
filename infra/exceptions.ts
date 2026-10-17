@@ -15,7 +15,7 @@ export const applyExceptions = (apis: { dev: ApiService; stg: ApiService; prod: 
   //       「INF-41 は検証環境だけ例外、理由はこれ」と、チェックシートの形で答えられる。
   //       回答の工数 15人日 → 5人日。変更のたびに 360か所（40項目×9環境）を自動で確かめ直す。
   // -----------------------------------------------------------------------------------
-  // addException(apis.stg, 'INF-41', '検証環境はコストを優先し1タスクで運用する（インフラ承認済み）');
+  addException(apis.stg, 'INF-41', '検証環境はコストを優先し1タスクで運用する（インフラ承認済み）');
   void apis;
   void addException;
 };
