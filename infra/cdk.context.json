@@ -1,0 +1,194 @@
+{
+  "vpc-provider:account=441700732286:filter.tag:Name=acme-dev:region=ap-northeast-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-0a0de86a6369be585",
+    "vpcCidrBlock": "10.0.0.0/16",
+    "ownerAccountId": "441700732286",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "app",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-0a4d3b41de170cca4",
+            "cidr": "10.0.4.0/22",
+            "availabilityZone": "ap-northeast-1a",
+            "routeTableId": "rtb-02dde747855e907cb"
+          },
+          {
+            "subnetId": "subnet-0929ef9a30e992ecf",
+            "cidr": "10.0.8.0/22",
+            "availabilityZone": "ap-northeast-1c",
+            "routeTableId": "rtb-08526bef6d5f3dbcf"
+          }
+        ]
+      },
+      {
+        "name": "public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-091f214320fc58faf",
+            "cidr": "10.0.0.0/24",
+            "availabilityZone": "ap-northeast-1a",
+            "routeTableId": "rtb-041c969eddda6fd69"
+          },
+          {
+            "subnetId": "subnet-0b9c67377d2fd764f",
+            "cidr": "10.0.1.0/24",
+            "availabilityZone": "ap-northeast-1c",
+            "routeTableId": "rtb-0b1647bae8ad9b35f"
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-0c2e37fd0ebdbe1a9",
+            "cidr": "10.0.12.0/24",
+            "availabilityZone": "ap-northeast-1a",
+            "routeTableId": "rtb-0ad9207407851c5ff"
+          },
+          {
+            "subnetId": "subnet-03ac60494b770bdc5",
+            "cidr": "10.0.13.0/24",
+            "availabilityZone": "ap-northeast-1c",
+            "routeTableId": "rtb-07f446d5e4c244d6a"
+          }
+        ]
+      }
+    ]
+  },
+  "cc-api-provider:account=441700732286:expectedMatchCount=exactly-one:propertiesToReturn.0=PrefixListId:propertyMatch.PrefixListName=com.amazonaws.global.cloudfront.origin-facing:region=ap-northeast-1:typeName=AWS$:$:EC2$:$:PrefixList": [
+    {
+      "PrefixListId": "pl-58a04531",
+      "Identifier": "pl-58a04531"
+    }
+  ],
+  "vpc-provider:account=441700732286:filter.tag:Name=acme-stg:region=ap-northeast-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-00000000000000001",
+    "vpcCidrBlock": "10.1.0.0/16",
+    "ownerAccountId": "441700732286",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "app",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-00000000000000065",
+            "cidr": "10.1.4.0/22",
+            "availabilityZone": "ap-northeast-1a",
+            "routeTableId": "rtb-00000000000000065"
+          },
+          {
+            "subnetId": "subnet-00000000000000066",
+            "cidr": "10.1.8.0/22",
+            "availabilityZone": "ap-northeast-1c",
+            "routeTableId": "rtb-00000000000000066"
+          }
+        ]
+      },
+      {
+        "name": "public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-00000000000000067",
+            "cidr": "10.1.0.0/24",
+            "availabilityZone": "ap-northeast-1a",
+            "routeTableId": "rtb-00000000000000067"
+          },
+          {
+            "subnetId": "subnet-00000000000000068",
+            "cidr": "10.1.1.0/24",
+            "availabilityZone": "ap-northeast-1c",
+            "routeTableId": "rtb-00000000000000068"
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-00000000000000069",
+            "cidr": "10.1.12.0/24",
+            "availabilityZone": "ap-northeast-1a",
+            "routeTableId": "rtb-00000000000000069"
+          },
+          {
+            "subnetId": "subnet-0000000000000006a",
+            "cidr": "10.1.13.0/24",
+            "availabilityZone": "ap-northeast-1c",
+            "routeTableId": "rtb-0000000000000006a"
+          }
+        ]
+      }
+    ]
+  },
+  "vpc-provider:account=441700732286:filter.tag:Name=acme-prod:region=ap-northeast-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-00000000000000002",
+    "vpcCidrBlock": "10.2.0.0/16",
+    "ownerAccountId": "441700732286",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "app",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-000000000000000c9",
+            "cidr": "10.2.4.0/22",
+            "availabilityZone": "ap-northeast-1a",
+            "routeTableId": "rtb-000000000000000c9"
+          },
+          {
+            "subnetId": "subnet-000000000000000ca",
+            "cidr": "10.2.8.0/22",
+            "availabilityZone": "ap-northeast-1c",
+            "routeTableId": "rtb-000000000000000ca"
+          }
+        ]
+      },
+      {
+        "name": "public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-000000000000000cb",
+            "cidr": "10.2.0.0/24",
+            "availabilityZone": "ap-northeast-1a",
+            "routeTableId": "rtb-000000000000000cb"
+          },
+          {
+            "subnetId": "subnet-000000000000000cc",
+            "cidr": "10.2.1.0/24",
+            "availabilityZone": "ap-northeast-1c",
+            "routeTableId": "rtb-000000000000000cc"
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-000000000000000cd",
+            "cidr": "10.2.12.0/24",
+            "availabilityZone": "ap-northeast-1a",
+            "routeTableId": "rtb-000000000000000cd"
+          },
+          {
+            "subnetId": "subnet-000000000000000ce",
+            "cidr": "10.2.13.0/24",
+            "availabilityZone": "ap-northeast-1c",
+            "routeTableId": "rtb-000000000000000ce"
+          }
+        ]
+      }
+    ]
+  }
+}

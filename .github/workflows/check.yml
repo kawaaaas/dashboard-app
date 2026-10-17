@@ -1,0 +1,51 @@
+# PR：ルールで検査し、結果をPRに残す。ルール違反なら失敗する（main の保護で必須チェックにする）
+#
+# 【デモ2／基準2 セキュリティ】実際の運用では、手元で見せた検査が PR で必ず動く
+#   ・PR #1（違反）：この検査が赤くなり、マージできない。
+#   ・PR #2（例外）：検査は通るが、「例外あり」のラベルと例外の一覧のコメントが自動で付き、インフラのレビュー待ちになる。
+#   ・どちらも、Checks のサマリーにチェックシートの形の表が残る（＝顧客への回答の証跡。スライド30）。
+name: check
+on: pull_request
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/gha-check
+          aws-region: ap-northeast-1
+      # @acme スコープだけを CodeArtifact に向ける
+      - run: aws codeartifact login --tool npm --domain acme --repository platform --namespace acme
+      - name: 画面をビルド（部品が dist を S3 に置くため）
+        run: npm ci && npm run build
+        working-directory: app/web
+      - run: npm ci
+        working-directory: infra
+      - name: 型の検査
+        run: npx tsc --noEmit
+        working-directory: infra
+      - name: ルールで検査（違反なら失敗）
+        run: npx cdk synth '**' --quiet   # Stage の中のスタックも含めて全部を検査する
+        working-directory: infra
+      - name: 検査結果をPRのサマリーに書く
+        if: always()
+        run: npx acme-checksheet --markdown >> "$GITHUB_STEP_SUMMARY"
+        working-directory: infra
+      - name: 例外があれば、ラベルと一覧のコメントを付ける
+        if: always()
+        working-directory: infra
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          npx acme-checksheet --exceptions-only --markdown > exceptions.md || true
+          if [ -s exceptions.md ]; then
+            gh pr edit ${{ github.event.number }} --add-label "例外あり"
+            gh pr comment ${{ github.event.number }} --body-file exceptions.md
+          fi

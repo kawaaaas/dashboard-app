@@ -1,0 +1,28 @@
+# main へのマージ：開発環境だけデプロイする（検証・本番はデモでは synth のみ）
+name: deploy
+on:
+  push:
+    branches: [main]
+permissions:
+  id-token: write
+  contents: read
+concurrency: deploy-dev
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/gha-deploy
+          aws-region: ap-northeast-1
+      - run: aws codeartifact login --tool npm --domain acme --repository platform --namespace acme
+      - run: npm ci && npm run build
+        working-directory: app/web
+      - run: npm ci
+        working-directory: infra
+      # Dev/Dashboard（東京）と Dev/DashboardEdge（us-east-1：証明書と WAF）
+      - run: npx cdk deploy 'Dev/*' --require-approval never
+        working-directory: infra

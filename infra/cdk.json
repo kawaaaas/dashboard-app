@@ -1,0 +1,8 @@
+{
+  "app": "npx ts-node --transpile-only --prefer-ts-exts bin/app.ts",
+  "toolkitStackName": "CDKToolkit-ddapp",
+  "context": {
+    "acme:demo": true,
+    "@aws-cdk/core:bootstrapQualifier": "ddapp"
+  }
+}
