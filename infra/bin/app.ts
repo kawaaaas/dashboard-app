@@ -40,7 +40,7 @@ const devApi = new ApiService(dev, 'Dashboard', {
 //     人が目で確かめなくてよい。PR でもこの検査が必須になっていて、赤いままではマージできない（PR #1）。
 //   ・終わったらコメントに戻す（git checkout -- .）。
 // -------------------------------------------------------------------------------------
-// devApi.dbConnections.allowDefaultPortFromAnyIpv4();
+devApi.dbConnections.allowDefaultPortFromAnyIpv4();
 
 // 検証環境 ─ 書き方は開発環境と同じ。箱の envType を変えるだけで、検証環境の既定値（2タスクなど）になる
 const stg = new PlatformStage(app, 'Stg', { envType: 'stg' });
