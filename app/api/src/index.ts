@@ -41,9 +41,13 @@ app.get('/api/summary', async (c) => {
   if (date !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return c.json({ message: 'date は YYYY-MM-DD で指定してください' }, 400);
   }
-  if (!pool) return c.json(fixture(date));
+  const area = c.req.query('area') || undefined;
+  if (area !== undefined && area.length > 20) {
+    return c.json({ message: 'area が長すぎます' }, 400);
+  }
+  if (!pool) return c.json(fixture(date, area));
   try {
-    return c.json(await summarize(pool, date));
+    return c.json(await summarize(pool, date, area));
   } catch (error) {
     console.error(error);
     return c.json({ message: '集計に失敗しました' }, 500);
