@@ -68,3 +68,13 @@ npx cdk deploy 'Dev/*'
   - 検証・本番は synth だけで AWS に VPC を作っていないため、`acme-stg`・`acme-prod` の VPC は lookup の結果を固定した仮の値（開発環境の値を写して ID と CIDR を変えたもの）
 - ラベル `例外あり`
 - ブランチ保護（main）：`check` を必須チェックにする、CODEOWNERS のレビューを必須にする
+
+## 部品の版を上げる
+
+```bash
+cd infra
+scripts/upgrade-platform.sh 1.1.0
+```
+
+ブランチを切って版を固定で入れ、synth とチェックシートで確かめてから PR を作ります。取り込む時期はこのチームが決めます。
+デプロイ済みの環境と何が変わるかは、ブランチで `npx cdk diff 'Dev/*'` を流して確かめます。
