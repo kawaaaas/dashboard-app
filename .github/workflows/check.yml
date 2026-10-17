@@ -41,28 +41,55 @@ jobs:
         if: always()
         run: npx acme-checksheet --markdown >> "$GITHUB_STEP_SUMMARY"
         working-directory: infra
-      - name: 例外があれば、ラベルと一覧のコメントを付ける
-        if: always()
+      # 検査の結果（全項目の表）を、PR のコメント1つにまとめる。顧客への回答の証跡にもなる
+      - name: 検査結果をコメントする
+        if: always() && steps.synth.outcome != 'skipped'
         working-directory: infra
         env:
           GH_TOKEN: ${{ github.token }}
+          SYNTH: ${{ steps.synth.outcome }}
         run: |
           npx acme-checksheet --exceptions-only --markdown > exceptions.md || true
+          npx acme-checksheet --markdown > table.md || true   # 1行目が見出し、そのあとが全項目の表
+          {
+            head -n 1 table.md
+            echo
+            if [ "$SYNTH" = failure ]; then
+              echo '**❌ 違反があるため、マージできません。** 設定を直すか、理由を書いて `infra/exceptions.ts` に例外を申請してください（インフラのレビューが必要です）。'
+              echo
+              grep -E '^ERROR Checksheet-' synth.log | sed -E 's/^ERROR Checksheet-[^:]*: /- /; s/ \(Construct Annotations\)$//' | sort -u
+            elif [ -s exceptions.md ]; then
+              echo '**⚠️ 例外があります。** 理由は表の右端のとおりです。`infra/exceptions.ts` の変更は、インフラチームのレビューが必要です。'
+            else
+              echo '**✅ すべての項目に準拠しています。**'
+            fi
+            tail -n +2 table.md
+          } > checksheet.md
+          ../.github/scripts/upsert-comment.sh ${{ github.event.number }} checksheet checksheet.md
           if [ -s exceptions.md ]; then
             gh pr edit ${{ github.event.number }} --add-label "例外あり"
-            gh pr comment ${{ github.event.number }} --body-file exceptions.md
           fi
-      - name: 違反があれば、理由をコメントする
-        if: failure() && steps.synth.outcome == 'failure'
+      # アプリチームは手元で cdk diff を打たない。マージで開発環境に何が起きるかを PR で確かめられるようにする
+      - name: 開発環境との差分をコメントする
+        if: success()
         working-directory: infra
         env:
           GH_TOKEN: ${{ github.token }}
+          NO_COLOR: '1'
         run: |
+          # 読み取り専用のロールで比べられるよう、変更セットは作らずテンプレートどうしで比べる
+          npx cdk diff 'Dev/*' --method=template 2>&1 | awk '/^Stack /{p=1} p' | head -c 60000 > diff.txt
           {
-            echo '### チェックシートの違反'
+            echo '### 開発環境との差分'
             echo
-            echo 'ルールに違反しているため、マージできません。設定を直すか、理由を書いて `infra/exceptions.ts` に例外を申請してください（インフラのレビューが必要です）。'
-            echo
-            grep -E '^ERROR Checksheet-' synth.log | sed -E 's/^ERROR Checksheet-[^:]*: /- /; s/ \(Construct Annotations\)$//' | sort -u
-          } > violations.md
-          gh pr comment ${{ github.event.number }} --body-file violations.md --edit-last --create-if-none
+            if grep -q 'Number of stacks with differences: 0' diff.txt; then
+              echo 'この PR をマージしても、開発環境のリソースは変わりません。'
+            else
+              echo 'この PR をマージすると、開発環境（`Dev`）は次のように変わります。`[-]` が今の値、`[+]` がマージ後の値です。'
+              echo
+              echo '```'
+              cat diff.txt
+              echo '```'
+            fi
+          } > diff.md
+          ../.github/scripts/upsert-comment.sh ${{ github.event.number }} cdk-diff diff.md

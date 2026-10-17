@@ -4,14 +4,33 @@ export interface AppConfig {
   readonly env: string;
 }
 
+export interface Totals {
+  readonly reservations: number;
+  readonly guests: number;
+  readonly stores: number;
+}
+
 export interface Summary {
   readonly date: string;
+  readonly area: string | null;
+  readonly areas: ReadonlyArray<string>;
+  readonly storeCount: number;
   readonly totalReservations: number;
   readonly totalGuests: number;
   readonly activeStores: number;
-  readonly byHour: ReadonlyArray<{ hour: number; count: number }>;
+  readonly previous: Totals;
+  readonly byHour: ReadonlyArray<{ hour: number; count: number; previous: number }>;
   readonly byChannel: ReadonlyArray<{ channel: string; count: number }>;
-  readonly topStores: ReadonlyArray<{ storeId: number; name: string; area: string; reservations: number; guests: number }>;
+  readonly byArea: ReadonlyArray<{ area: string; count: number; guests: number }>;
+  readonly daily: ReadonlyArray<{ date: string; count: number; guests: number }>;
+  readonly topStores: ReadonlyArray<{
+    storeId: number;
+    name: string;
+    area: string;
+    reservations: number;
+    guests: number;
+    previous: number;
+  }>;
 }
 
 export const loadConfig = async (): Promise<AppConfig> => {
@@ -20,9 +39,10 @@ export const loadConfig = async (): Promise<AppConfig> => {
   return res.json();
 };
 
-export const fetchSummary = async (apiUrl: string, date?: string): Promise<Summary> => {
+export const fetchSummary = async (apiUrl: string, date?: string, area?: string): Promise<Summary> => {
   const url = new URL('/api/summary', apiUrl || window.location.origin);
   if (date) url.searchParams.set('date', date);
+  if (area) url.searchParams.set('area', area);
   const res = await fetch(url);
   if (!res.ok) throw new Error(`集計を取得できませんでした（${res.status}）`);
   return res.json();
