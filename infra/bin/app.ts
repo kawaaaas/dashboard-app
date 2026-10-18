@@ -7,11 +7,6 @@
 //     ・暗号化・ネットワーク・入口（CloudFront・WAF・証明書）・ログの設定は、1行も書いていない。
 //       すべて部品の既定値で、インフラチームの標準どおりになる。
 //     ・アプリ側が選ぶのは「画面があるか（site）」「DBをどう使うか（db）」だけ。
-//
-//   数字に置き換えると（スライド26）
-//     ・依頼して2週間待っていた1環境が、1日以内（実測〔　〕分）でそろう。
-//     ・インフラの工数 60人日 → 約17人日。今の余力で約2.5ヶ月、9環境は期限の1ヶ月以上前にそろう。
-//     ・契約開始が1ヶ月遅れるごとに失う1,000万円を守れる。
 // =====================================================================================
 import { ApiService, PlatformStage } from '@acme/platform';
 import { App, aws_ecs as ecs } from 'aws-cdk-lib';
@@ -22,7 +17,7 @@ const app = new App();
 const image = ecs.ContainerImage.fromAsset('../app/api', { platform: Platform.LINUX_AMD64 }); // アプリのコンテナ
 const site = { source: '../app/web/dist' }; // 画面のビルド結果
 
-// 開発環境 ─ 【デモ1 ①】ここを指す：「1環境あたり、これだけです」
+// 開発環境 ─ 【デモ1 ①】1環境あたり、これだけのコードで、インフラのすべてが書ける
 const dev = new PlatformStage(app, 'Dev', { envType: 'dev' }); // 箱：中に置いたものに、チェックシートの検査が自動でかかる
 const devApi = new ApiService(dev, 'Dashboard', {
   service: 'dashboard', // URL は https://dashboard-dev.<ドメイン> になる
