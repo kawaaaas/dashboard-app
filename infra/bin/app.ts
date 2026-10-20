@@ -51,7 +51,7 @@ const devApi = new ApiService(dev, 'Dashboard', {
 //   ・アプリチームは検査の設定を何も書いていない。箱に置いた時点で、変更のたびに必ずかかる。
 //   ・PR でも同じ検査が必須。違反した PR は赤くなり、マージできない（PR #1）。
 // -------------------------------------------------------------------------------------
-// devApi.dbConnections.allowDefaultPortFromAnyIpv4();
+devApi.dbConnections.allowDefaultPortFromAnyIpv4();
 
 // ── 検証環境 ─────────────────────────────────────────────────────────────────
 // 書き方は開発環境と同じ。箱の envType を変えるだけで、検証環境の既定値（2タスク・Multi-AZ）になる
